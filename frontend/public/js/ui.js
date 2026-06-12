@@ -14,6 +14,7 @@
       this._cacheElements();
       this._lastHp = 3;
       this._lastScore = 0;
+      this._lastCombo = 0;
     }
 
     _cacheElements() {
@@ -29,6 +30,9 @@
         hpHearts: document.getElementById('hp-hearts'),
         scoreValue: document.getElementById('score-value'),
         distValue: document.getElementById('dist-value'),
+        comboBlock: document.getElementById('combo-block'),
+        comboValue: document.getElementById('combo-value'),
+        multiplierValue: document.getElementById('multiplier-value'),
         effectsBar: document.getElementById('effects-bar'),
         pauseBtn: document.getElementById('pause-btn'),
         reconnecting: document.getElementById('reconnecting-toast'),
@@ -46,6 +50,7 @@
         finalObstacles: document.getElementById('final-obstacles'),
         finalItems: document.getElementById('final-items'),
         finalDuration: document.getElementById('final-duration'),
+        finalMaxCombo: document.getElementById('final-max-combo'),
         finalHighscore: document.getElementById('final-highscore'),
         historyList: document.getElementById('history-list'),
         rankList: document.getElementById('rank-list'),
@@ -114,6 +119,36 @@
       if (this.elements.distValue) {
         this.elements.distValue.textContent = Math.floor(dist) + 'm';
       }
+    }
+
+    updateCombo(combo, multiplier) {
+      if (this.elements.comboValue) {
+        this.elements.comboValue.textContent = combo;
+      }
+      if (this.elements.multiplierValue) {
+        this.elements.multiplierValue.textContent = '×' + multiplier.toFixed(1);
+      }
+      if (this.elements.comboBlock) {
+        this.elements.comboBlock.classList.remove('combo-break', 'combo-increase');
+        if (this._lastCombo > 0 && combo === 0) {
+          this.elements.comboBlock.classList.add('combo-break');
+          void this.elements.comboBlock.offsetWidth;
+          this.elements.comboBlock.classList.add('combo-break');
+        } else if (combo > this._lastCombo && combo > 0) {
+          this.elements.comboBlock.classList.add('combo-increase');
+          void this.elements.comboBlock.offsetWidth;
+          this.elements.comboBlock.classList.add('combo-increase');
+        }
+        if (combo >= 10) {
+          this.elements.comboBlock.classList.add('combo-hot');
+        } else if (combo >= 5) {
+          this.elements.comboBlock.classList.add('combo-warm');
+          this.elements.comboBlock.classList.remove('combo-hot');
+        } else {
+          this.elements.comboBlock.classList.remove('combo-warm', 'combo-hot');
+        }
+      }
+      this._lastCombo = combo;
     }
 
     updateEffects(effects) {
@@ -204,6 +239,7 @@
       if (this.elements.finalObstacles) this.elements.finalObstacles.textContent = data.obstaclesPassed || 0;
       if (this.elements.finalItems) this.elements.finalItems.textContent = data.itemsCollected || 0;
       if (this.elements.finalDuration) this.elements.finalDuration.textContent = Math.floor((data.duration || 0) / 1000) + 's';
+      if (this.elements.finalMaxCombo) this.elements.finalMaxCombo.textContent = data.maxCombo || 0;
       if (this.elements.finalHighscore) this.elements.finalHighscore.textContent = (data.highScore || 0).toLocaleString();
     }
 

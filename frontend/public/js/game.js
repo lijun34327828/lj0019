@@ -89,6 +89,7 @@
           this.ui.updateHP(s.player ? s.player.hp : 3, this.maxHP);
           this.ui.updateScore(s.score || 0);
           this.ui.updateDistance(s.distance || 0);
+          this.ui.updateCombo(s.combo || 0, s.scoreMultiplier || 1.0);
           if (s.activeEffects) this.ui.updateEffects(this._formatEffects(s.activeEffects));
         }
       });
@@ -149,6 +150,7 @@
         this.ui.updateHP(3, this.maxHP);
         this.ui.updateScore(0);
         this.ui.updateDistance(0);
+        this.ui.updateCombo(0, 1.0);
         this.ui.updateEffects([]);
       } catch (e) {
         console.error('[GAME] Start failed:', e);
@@ -246,6 +248,7 @@
 
       this.ui.updateScore(data.score || 0);
       this.ui.updateDistance(data.distance || 0);
+      this.ui.updateCombo(data.combo || 0, data.scoreMultiplier || 1.0);
       this.ui.updateEffects(this._formatEffects(data.activeEffects));
     }
 

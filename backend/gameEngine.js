@@ -47,6 +47,9 @@ class GameEngine {
       duration: 0,
       isNewRecord: false,
       pendingActions: [],
+      combo: 0,
+      maxCombo: 0,
+      scoreMultiplier: 1.0,
     };
     this.sessions.set(sessionId, session);
     return session;
@@ -89,6 +92,9 @@ class GameEngine {
       gameStartTime: session.gameStartTime,
       duration: session.duration,
       isNewRecord: session.isNewRecord,
+      combo: session.combo,
+      maxCombo: session.maxCombo,
+      scoreMultiplier: session.scoreMultiplier,
     };
   }
 
@@ -193,7 +199,9 @@ class GameEngine {
     this.checkItemCollisions(session, terrain.items, now);
 
     const scoreFromDistance = Math.floor(session.distance * GAME_CONFIG.SCORE_PER_DISTANCE);
-    session.score = scoreFromDistance + session.obstaclesPassed * GAME_CONFIG.SCORE_PER_OBSTACLE_PASS + session.itemsCollected * GAME_CONFIG.SCORE_PER_ITEM;
+    const scoreFromObstacles = Math.floor(session.obstaclesPassed * GAME_CONFIG.SCORE_PER_OBSTACLE_PASS * session.scoreMultiplier);
+    const scoreFromItems = Math.floor(session.itemsCollected * GAME_CONFIG.SCORE_PER_ITEM * session.scoreMultiplier);
+    session.score = scoreFromDistance + scoreFromObstacles + scoreFromItems;
 
     if (player.hp <= 0) {
       session.state = GAME_STATES.GAME_OVER;
@@ -303,6 +311,11 @@ class GameEngine {
         session.passedObstacleIds.add(obs.id);
         if (obs.type !== OBSTACLE_TYPES.PIT) {
           session.obstaclesPassed++;
+          session.combo++;
+          if (session.combo > session.maxCombo) {
+            session.maxCombo = session.combo;
+          }
+          session.scoreMultiplier = Math.min(3.0, 1.0 + Math.floor(session.combo / 5) * 0.5);
         }
         continue;
       }
@@ -348,6 +361,8 @@ class GameEngine {
     player.state = PLAYER_STATES.HURT;
     player.invincibleUntil = now + GAME_CONFIG.INVINCIBLE_DURATION;
     player.lastHurt = now;
+    session.combo = 0;
+    session.scoreMultiplier = 1.0;
     if (player.hp <= 0) {
       player.hp = 0;
       player.state = PLAYER_STATES.DEAD;
@@ -454,6 +469,9 @@ class GameEngine {
       speed: session.speed,
       obstaclesPassed: session.obstaclesPassed,
       itemsCollected: session.itemsCollected,
+      combo: session.combo,
+      maxCombo: session.maxCombo,
+      scoreMultiplier: session.scoreMultiplier,
       activeEffects: session.activeEffects.map(e => ({
         type: e.type,
         remainingTime: Math.max(0, e.endTime - Date.now()),

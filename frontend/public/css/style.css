@@ -132,6 +132,103 @@ html, body {
   color: #4fc3f7;
 }
 
+.combo-block {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 6px 14px;
+  border-radius: 12px;
+  backdrop-filter: blur(8px);
+  transition: all 0.2s ease;
+}
+
+.combo-label {
+  font-size: 10px;
+  color: #888;
+  text-transform: uppercase;
+}
+
+.combo-value {
+  font-size: 22px;
+  font-weight: 900;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+  transition: transform 0.15s ease, color 0.2s ease;
+}
+
+.multiplier-value {
+  font-size: 14px;
+  font-weight: 800;
+  color: #aaa;
+  padding: 2px 8px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  font-variant-numeric: tabular-nums;
+  transition: all 0.2s ease;
+}
+
+.combo-block.combo-warm .combo-value {
+  color: #ffb347;
+  text-shadow: 0 0 10px rgba(255, 179, 71, 0.5);
+}
+
+.combo-block.combo-warm .multiplier-value {
+  color: #ffb347;
+  background: rgba(255, 179, 71, 0.15);
+}
+
+.combo-block.combo-hot .combo-value {
+  color: #ff4757;
+  text-shadow: 0 0 15px rgba(255, 71, 87, 0.7);
+  animation: comboHotPulse 0.5s ease infinite alternate;
+}
+
+.combo-block.combo-hot .multiplier-value {
+  color: #ff4757;
+  background: rgba(255, 71, 87, 0.2);
+  box-shadow: 0 0 10px rgba(255, 71, 87, 0.3);
+}
+
+@keyframes comboHotPulse {
+  from { transform: scale(1); }
+  to { transform: scale(1.08); }
+}
+
+.combo-block.combo-increase .combo-value {
+  animation: comboIncrease 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes comboIncrease {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.4); }
+  100% { transform: scale(1); }
+}
+
+.combo-block.combo-break {
+  animation: comboBreak 0.5s ease;
+}
+
+@keyframes comboBreak {
+  0% { transform: translateX(0); background: rgba(255, 71, 87, 0.3); }
+  20% { transform: translateX(-8px); }
+  40% { transform: translateX(8px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+  100% { transform: translateX(0); background: rgba(0, 0, 0, 0.4); }
+}
+
+.combo-block.combo-break .combo-value {
+  color: #ff4757;
+  animation: comboBreakText 0.5s ease;
+}
+
+@keyframes comboBreakText {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(0.6); opacity: 0.3; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
 .pause-btn {
   pointer-events: auto;
   background: rgba(0, 0, 0, 0.5);

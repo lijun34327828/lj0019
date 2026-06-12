@@ -206,6 +206,7 @@ function handleGameOver(session) {
       hpRemaining: Math.max(0, session.player.hp),
       isNewRecord,
       highScore: player ? player.high_score : 0,
+      maxCombo: session.maxCombo,
     });
   }
 
