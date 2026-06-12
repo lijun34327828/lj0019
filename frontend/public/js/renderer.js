@@ -102,7 +102,7 @@
       if (world) {
         const camX = world.cameraX || 0;
         this.ctx.save();
-        this.ctx.translate(-camX * (this.W / 800), 0);
+        this.ctx.translate(-camX, 0);
         this._drawTerrain(world, camX);
         this._drawItems(world, camX);
         this._drawObstacles(world, camX);
@@ -428,7 +428,8 @@
       const p = world.player;
       if (!p) return;
       const ctx = this.ctx;
-      const px = p.x, py = p.y, pw = p.width, ph = p.height;
+      const px = (p.worldX !== undefined) ? p.worldX : p.x;
+      const py = p.y, pw = p.width, ph = p.height;
       const cx = px + pw / 2;
       const cy = py + ph / 2;
 
@@ -545,6 +546,7 @@
     }
 
     _roundRect(ctx, x, y, w, h, r, fill, stroke) {
+      r = Math.max(0, Math.min(r, w / 2, h / 2));
       if (w < 2 * r) r = w / 2;
       if (h < 2 * r) r = h / 2;
       ctx.beginPath();

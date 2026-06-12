@@ -178,6 +178,11 @@ function broadcastState(session) {
 }
 
 function handleGameOver(session) {
+  const score = Math.floor(session.score);
+  const playerBefore = dbOperations.getPlayer(session.playerId);
+  const prevHighScore = playerBefore ? (playerBefore.high_score || 0) : 0;
+  const isNewRecord = score > prevHighScore;
+
   dbOperations.addGameRecord({
     playerId: session.playerId,
     score: Math.floor(session.score),
@@ -189,7 +194,6 @@ function handleGameOver(session) {
   });
 
   const player = dbOperations.getPlayer(session.playerId);
-  const isNewRecord = player && Math.floor(session.score) >= player.high_score;
 
   const client = clientConnections.get(session.sessionId);
   if (client) {
@@ -222,8 +226,6 @@ function gameTick() {
       const endX = session.cameraX + GAME_CONFIG.CANVAS_WIDTH + GAME_CONFIG.CHUNK_SIZE * 2;
       const terrainData = terrain.getTerrainRange(startX, endX);
       terrain.updateMovingObjects(terrainData, now);
-
-      session.player.x = session.player.worldX - session.cameraX;
 
       gameEngine.update(session, delta, terrainData);
       broadcastState(session);

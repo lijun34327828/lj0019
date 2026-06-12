@@ -170,7 +170,7 @@ class GameEngine {
     player.vy += GAME_CONFIG.GRAVITY;
     player.y += player.vy;
 
-    this.handlePlatformCollisions(player, terrain.platforms, groundY);
+    this.handlePlatformCollisions(player, terrain.platforms, groundY, terrain.obstacles);
 
     if (!player.onGround && !player.isSliding) {
       if (player.vy > 0) {
@@ -239,32 +239,37 @@ class GameEngine {
     return magnet ? ITEM_CONFIG.MAGNET.magnetRange : 0;
   }
 
-  handlePlatformCollisions(player, platforms, groundY) {
+  handlePlatformCollisions(player, platforms, groundY, obstacles) {
     player.onGround = false;
     const prevBottom = player.y + player.height - player.vy;
+    const playerWorldX = player.worldX;
+    const playerCenterX = playerWorldX + player.width / 2;
+
+    let inPit = false;
+    for (const obs of obstacles) {
+      if (obs.type === OBSTACLE_TYPES.PIT) {
+        if (playerCenterX > obs.x + 5 && playerCenterX < obs.x + obs.width - 5) {
+          inPit = true;
+          break;
+        }
+      }
+    }
 
     const sortedPlatforms = [...platforms].sort((a, b) => b.y - a.y);
     for (const plat of sortedPlatforms) {
+      if (plat.isGround && inPit) continue;
       this.checkPlatformCollision(player, plat, prevBottom);
     }
-
-    const hasValidGround = platforms.some(plat => {
-      if (plat.isGround) return true;
-      return false;
-    });
   }
 
   checkPlatformCollision(player, plat, prevBottom) {
-    if (plat.type === OBSTACLE_TYPES.PIT) return false;
-
-    const px = player.x;
+    const px = player.worldX;
     const py = player.y;
     const pw = player.width;
     const ph = player.height;
     const platX = plat.x;
     const platY = plat.y;
     const platW = plat.width;
-    const platH = plat.height;
 
     const overlapX = px + pw > platX && px < platX + platW;
     if (!overlapX) return false;
@@ -289,12 +294,12 @@ class GameEngine {
     const player = session.player;
     for (const obs of obstacles) {
       if (session.passedObstacleIds.has(obs.id)) {
-        if (player.x > obs.x + obs.width) {
+        if (player.worldX > obs.x + obs.width) {
         }
         continue;
       }
 
-      if (player.x > obs.x + obs.width && !session.passedObstacleIds.has(obs.id)) {
+      if (player.worldX > obs.x + obs.width && !session.passedObstacleIds.has(obs.id)) {
         session.passedObstacleIds.add(obs.id);
         if (obs.type !== OBSTACLE_TYPES.PIT) {
           session.obstaclesPassed++;
@@ -302,18 +307,18 @@ class GameEngine {
         continue;
       }
 
-      if (this.checkObstacleAABB(player, obs)) {
-        if (obs.type === OBSTACLE_TYPES.PIT) {
-          if (player.onGround) {
-            const playerCenter = player.x + player.width / 2;
-            if (playerCenter > obs.x && playerCenter < obs.x + obs.width) {
-              if (player.y + player.height > obs.y + 5) {
-              }
-            }
+      if (obs.type === OBSTACLE_TYPES.PIT) {
+        const playerCenter = player.worldX + player.width / 2;
+        if (playerCenter > obs.x && playerCenter < obs.x + obs.width) {
+          if (player.y + player.height >= GAME_CONFIG.CANVAS_HEIGHT + 10) {
+            this.damagePlayer(session, 999, now);
+            return;
           }
-          continue;
         }
+        continue;
+      }
 
+      if (this.checkObstacleAABB(player, obs)) {
         if (now < player.invincibleUntil) continue;
 
         if (this.hasShield(session)) {
@@ -330,8 +335,8 @@ class GameEngine {
   checkObstacleAABB(player, obs) {
     if (obs.type === OBSTACLE_TYPES.PIT) return false;
     return (
-      player.x + player.width > obs.x + 5 &&
-      player.x < obs.x + obs.width - 5 &&
+      player.worldX + player.width > obs.x + 5 &&
+      player.worldX < obs.x + obs.width - 5 &&
       player.y + player.height > obs.y + 5 &&
       player.y < obs.y + obs.height - 5
     );
@@ -367,7 +372,7 @@ class GameEngine {
 
       const itemCX = item.x + item.width / 2;
       const itemCY = item.y + (item.bobOffset || 0) + item.height / 2;
-      const playerCX = player.x + player.width / 2;
+      const playerCX = player.worldX + player.width / 2;
       const playerCY = player.y + player.height / 2;
       const dist = Math.hypot(itemCX - playerCX, itemCY - playerCY);
 
@@ -380,10 +385,10 @@ class GameEngine {
       }
 
       if (
-        player.x + player.width > item.x &&
-        player.x < item.x + item.width &&
-        player.y + player.height > item.y &&
-        player.y < item.y + item.height
+        player.worldX + player.width > item.x &&
+        player.worldX < item.x + item.width &&
+        player.y + player.height > item.y + (item.bobOffset || 0) &&
+        player.y < item.y + (item.bobOffset || 0) + item.height
       ) {
         this.collectItem(session, item, now);
       }
@@ -426,11 +431,12 @@ class GameEngine {
   }
 
   getWorldUpdate(session, terrain) {
+    const screenX = session.player.worldX - session.cameraX;
     return {
       type: MESSAGE_TYPES.WORLD_UPDATE,
       timestamp: Date.now(),
       player: {
-        x: session.player.x,
+        x: screenX,
         y: session.player.y,
         worldX: session.player.worldX,
         state: session.player.state,

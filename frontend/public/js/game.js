@@ -221,11 +221,6 @@
     _onWorldUpdate(data) {
       if (!data || this.state === GAME_STATES.MENU) return;
 
-      if (data.player && data.player.worldX !== undefined) {
-        data.player.x = data.player.worldX - (data.cameraX || 0) - data.player.worldX + data.player.x;
-        data.player.x = 100;
-      }
-
       this.latestWorld = data;
 
       if (data.gameState === 'PAUSED' && this.state === GAME_STATES.PLAYING) {
