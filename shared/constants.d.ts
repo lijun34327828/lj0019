@@ -1,0 +1,50 @@
+export const GAME_CONFIG: {
+  CANVAS_WIDTH: number;
+  CANVAS_HEIGHT: number;
+  GRAVITY: number;
+  JUMP_FORCE: number;
+  DOUBLE_JUMP_FORCE: number;
+  PLAYER_WIDTH: number;
+  PLAYER_HEIGHT: number;
+  SLIDE_HEIGHT: number;
+  BASE_SPEED: number;
+  MAX_SPEED: number;
+  SPEED_INCREMENT: number;
+  GROUND_HEIGHT: number;
+  TILE_WIDTH: number;
+  SCORE_PER_DISTANCE: number;
+  SCORE_PER_OBSTACLE_PASS: number;
+  SCORE_PER_ITEM: number;
+  INITIAL_HP: number;
+  INVINCIBLE_DURATION: number;
+  CHUNK_SIZE: number;
+  RENDER_DISTANCE: number;
+  PLATFORM_MIN_WIDTH: number;
+  PLATFORM_MAX_WIDTH: number;
+  PLATFORM_GAP_MIN: number;
+  PLATFORM_GAP_MAX: number;
+  PLATFORM_HEIGHT_MIN: number;
+  PLATFORM_HEIGHT_MAX: number;
+  TRAP_SPAWN_RATE: number;
+  MOVING_OBSTACLE_RATE: number;
+  ITEM_SPAWN_RATE: number;
+};
+
+export const ITEM_CONFIG: Record<string, {
+  type: string;
+  name: string;
+  color: string;
+  icon: string;
+  duration: number;
+  speedMultiplier?: number;
+  magnetRange?: number;
+  spawnWeight: number;
+  stackable: boolean;
+  maxStacks: number;
+}>;
+
+export const GAME_STATES: Record<string, string>;
+export const PLAYER_STATES: Record<string, string>;
+export const MESSAGE_TYPES: Record<string, string>;
+export const OBSTACLE_TYPES: Record<string, string>;
+export const PLATFORM_TYPES: Record<string, string>;

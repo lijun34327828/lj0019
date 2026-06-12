@@ -1,0 +1,131 @@
+const GAME_CONFIG = {
+  CANVAS_WIDTH: 800,
+  CANVAS_HEIGHT: 450,
+  GRAVITY: 0.8,
+  JUMP_FORCE: -15,
+  DOUBLE_JUMP_FORCE: -13,
+  PLAYER_WIDTH: 40,
+  PLAYER_HEIGHT: 60,
+  SLIDE_HEIGHT: 30,
+  BASE_SPEED: 5,
+  MAX_SPEED: 12,
+  SPEED_INCREMENT: 0.001,
+  GROUND_HEIGHT: 80,
+  TILE_WIDTH: 40,
+  SCORE_PER_DISTANCE: 0.1,
+  SCORE_PER_OBSTACLE_PASS: 50,
+  SCORE_PER_ITEM: 100,
+  INITIAL_HP: 3,
+  INVINCIBLE_DURATION: 1500,
+  CHUNK_SIZE: 2000,
+  RENDER_DISTANCE: 3,
+  PLATFORM_MIN_WIDTH: 80,
+  PLATFORM_MAX_WIDTH: 200,
+  PLATFORM_GAP_MIN: 100,
+  PLATFORM_GAP_MAX: 250,
+  PLATFORM_HEIGHT_MIN: 60,
+  PLATFORM_HEIGHT_MAX: 180,
+  TRAP_SPAWN_RATE: 0.3,
+  MOVING_OBSTACLE_RATE: 0.2,
+  ITEM_SPAWN_RATE: 0.15,
+};
+
+const ITEM_CONFIG = {
+  SPEED_BOOST: {
+    type: 'SPEED_BOOST',
+    name: '加速',
+    color: '#FFD700',
+    icon: '⚡',
+    duration: 5000,
+    speedMultiplier: 1.6,
+    spawnWeight: 40,
+    stackable: true,
+    maxStacks: 2,
+  },
+  SHIELD: {
+    type: 'SHIELD',
+    name: '护盾',
+    color: '#4FC3F7',
+    icon: '🛡️',
+    duration: 8000,
+    spawnWeight: 30,
+    stackable: true,
+    maxStacks: 3,
+  },
+  MAGNET: {
+    type: 'MAGNET',
+    name: '磁铁',
+    color: '#F06292',
+    icon: '🧲',
+    duration: 6000,
+    magnetRange: 200,
+    spawnWeight: 30,
+    stackable: false,
+    maxStacks: 1,
+  },
+};
+
+const GAME_STATES = {
+  MENU: 'MENU',
+  LOADING: 'LOADING',
+  PLAYING: 'PLAYING',
+  PAUSED: 'PAUSED',
+  GAME_OVER: 'GAME_OVER',
+  RECONNECTING: 'RECONNECTING',
+};
+
+const PLAYER_STATES = {
+  RUNNING: 'RUNNING',
+  JUMPING: 'JUMPING',
+  DOUBLE_JUMPING: 'DOUBLE_JUMPING',
+  SLIDING: 'SLIDING',
+  FALLING: 'FALLING',
+  HURT: 'HURT',
+  DEAD: 'DEAD',
+};
+
+const MESSAGE_TYPES = {
+  CONNECT: 'CONNECT',
+  RECONNECT: 'RECONNECT',
+  GAME_START: 'GAME_START',
+  GAME_STATE: 'GAME_STATE',
+  PLAYER_ACTION: 'PLAYER_ACTION',
+  WORLD_UPDATE: 'WORLD_UPDATE',
+  PAUSE: 'PAUSE',
+  RESUME: 'RESUME',
+  GAME_OVER: 'GAME_OVER',
+  SYNC_REQUEST: 'SYNC_REQUEST',
+  SYNC_RESPONSE: 'SYNC_RESPONSE',
+  PING: 'PING',
+  PONG: 'PONG',
+  ERROR: 'ERROR',
+  GET_HISTORY: 'GET_HISTORY',
+  HISTORY_RESPONSE: 'HISTORY_RESPONSE',
+  GET_HIGH_SCORE: 'GET_HIGH_SCORE',
+  HIGH_SCORE_RESPONSE: 'HIGH_SCORE_RESPONSE',
+};
+
+const OBSTACLE_TYPES = {
+  SPIKE: 'SPIKE',
+  PIT: 'PIT',
+  MOVING_V: 'MOVING_V',
+  MOVING_H: 'MOVING_H',
+  BLOCK: 'BLOCK',
+  LOW_BAR: 'LOW_BAR',
+};
+
+const PLATFORM_TYPES = {
+  NORMAL: 'NORMAL',
+  MOVING: 'MOVING',
+  BREAKABLE: 'BREAKABLE',
+};
+
+module.exports = {
+  GAME_CONFIG,
+  ITEM_CONFIG,
+  GAME_STATES,
+  PLAYER_STATES,
+  MESSAGE_TYPES,
+  OBSTACLE_TYPES,
+  PLATFORM_TYPES,
+};

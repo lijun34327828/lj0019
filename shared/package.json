@@ -1,0 +1,8 @@
+{
+  "name": "shared",
+  "version": "1.0.0",
+  "description": "游戏共享常量和配置",
+  "main": "constants.js",
+  "types": "constants.d.ts",
+  "private": true
+}
